@@ -1,5 +1,5 @@
 #.github/workflows/integration-workflow.yml
-name: Deploy to SIT env
+name: Deploy to TrailHead Env
 on:
   push:
     branches:
