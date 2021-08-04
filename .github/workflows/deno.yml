@@ -3,7 +3,7 @@ name: Trail Org Validate PR (check-only Taril ORG)
 on:
   pull_request:
     branches:
-      - master
+      - Master
 
 jobs:
   build:
