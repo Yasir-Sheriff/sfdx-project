@@ -1,7 +1,7 @@
 #.github/workflows/prod-workflow.yml
 name: PROD Deployment 
 on:
-  push:
+  pull_request:
     branches:
       - Master
 
