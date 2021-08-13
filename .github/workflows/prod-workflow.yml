@@ -55,7 +55,7 @@ jobs:
 
       # Display Previous SHA
       - name: Display Previous SHA
-        run: 'git rev-parse origin/Developer'
+        run: 'git rev-parse origin/Master'
 
       # generate DIFF package
       - name: Generate DIFF Package
@@ -76,8 +76,8 @@ jobs:
         shell: bash
         run: 'echo ${{ secrets.PRODORG_SFDX_URL}} > ./PRODORG_SFDX_URL.txt'
 
-      # Authenticate CI ORG
-      - name: 'Authenticate CI ORG'
+      # Authenticate Prod ORG
+      - name: 'Authenticate Prod ORG'
         run: 'sfdx auth:sfdxurl:store -f ./PRODORG_SFDX_URL.txt -a prodorg -d'
 
       # Deploy delta package - Check only
