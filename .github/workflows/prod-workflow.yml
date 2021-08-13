@@ -1,0 +1,85 @@
+#.github/workflows/prod-workflow.yml
+name: PROD Deployment 
+on:
+  pull_request:
+    branches:
+      - Master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: DLP-CAP
+    steps:
+      # Install Salesforce CLI
+      - name: Install Salesforce CLI
+        run: |
+          wget https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
+          mkdir sfdx-cli
+          tar xJf sfdx-linux-amd64.tar.xz -C sfdx-cli --strip-components 1
+          ./sfdx-cli/install
+      # Echo Salesforce confg
+      - name: Check Salesforce CLI config
+        run: 'sfdx force:config:list'
+
+      # This action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
+      - name: 'Checkout source code'
+        uses: actions/checkout@v2
+
+      # Install Salesforce sfdx-git-delta
+      - name: Install sfdx-git-delta package
+        run: 'sudo npm install sfdx-git-delta@latest -g'
+      
+      # Git Fetch
+      - name: Git Fetch
+        run: |
+          git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
+          git fetch --all
+      
+      # Dump GitHub context
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "GITHUB_CONTEXT BEFORE"
+          echo ${{ github.event.before }}
+          echo "GITHUB_CONTEXT AFTER"
+          echo ${{ github.event.after }}
+      
+      # Display Current branch
+      - name: Display Current branch
+        run: 'git rev-parse --abbrev-ref HEAD'
+
+      # Display Current SHA
+      - name: Display Current SHA
+        run: 'git rev-parse HEAD'
+
+      # Display Previous SHA
+      - name: Display Previous SHA
+        run: 'git rev-parse origin/Developer'
+
+      # generate DIFF package
+      - name: Generate DIFF Package
+        run: |
+          git checkout -b pr
+          sgd --to pr --from origin/Developer --repo . --output .  
+      
+      # Display Package XML
+      - name: Display Package XML
+        run: 'cat package/package.xml'
+      
+      # Convert Source format to Metadata format
+      - name: Convert DIFF package to Metadata
+        run: 'sfdx force:source:convert --manifest=package/package.xml --outputdir=convert --loglevel fatal'     
+
+      # Store secret for dev hub
+      - name: 'Populate auth file with PRODORG_SFDX_URL secret'
+        shell: bash
+        run: 'echo ${{ secrets.PRODORG_SFDX_URL}} > ./PRODORG_SFDX_URL.txt'
+
+      # Authenticate CI ORG
+      - name: 'Authenticate CI ORG'
+        run: 'sfdx auth:sfdxurl:store -f ./PRODORG_SFDX_URL.txt -a prodorg -d'
+
+      # Deploy delta package - Check only
+      - name: Deploy DIFF package - Check only
+        run: 'sfdx force:mdapi:deploy --deploydir=convert --testlevel=RunLocalTests --checkonly -w60 -u prodorg'
