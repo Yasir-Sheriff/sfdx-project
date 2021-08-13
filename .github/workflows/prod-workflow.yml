@@ -55,7 +55,7 @@ jobs:
 
       # Display Previous SHA
       - name: Display Previous SHA
-        run: 'git rev-parse origin/Developer'
+        run: 'git rev-parse origin/Master'
 
       # generate DIFF package
       - name: Generate DIFF Package
