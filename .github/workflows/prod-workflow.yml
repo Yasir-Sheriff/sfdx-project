@@ -69,7 +69,7 @@ jobs:
       
       # Convert Source format to Metadata format
       - name: Convert DIFF package to Metadata
-        run: 'sfdx force:source:convert --manifest=package/package.xml --outputdir=convert --loglevel fatal'     
+        run: 'sfdx force:source:convert -r force-app -d convert --loglevel fatal'     
 
       # Store secret for dev hub
       - name: 'Populate auth file with PRODORG_SFDX_URL secret'
