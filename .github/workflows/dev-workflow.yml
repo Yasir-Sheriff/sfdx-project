@@ -45,7 +45,7 @@ jobs:
 
       # Convert Source format to Metadata format
       - name: Convert DIFF package to Metadata
-        run: sfdx force:mdapi:convert -r ../mdAPIZip/unpackaged
+        run: 'sfdx force:mdapi:convert –rootdir temp –outputdir force-app'
 
       # Store secret for dev hub
       - name: 'Populate auth file with DEV_SFDX_URL secret'
