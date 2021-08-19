@@ -58,4 +58,4 @@ jobs:
 
       # Deploy delta package in checkonly mode
       - name: Deploy DIFF package
-        run: 'sfdx force:mdapi:deploy --deploydir=convert --testlevel=NoTestRun -w60 -u devorg'
+        run: 'sfdx force:mdapi:deploy --checkonly --deploydir=convert --testlevel=NoTestRun -w60 -u devorg'
