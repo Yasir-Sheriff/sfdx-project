@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: DLP-CAP
+    environment: S5-UAT
     steps:
       # This action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
       - name: 'Checkout source code'
@@ -47,15 +47,15 @@ jobs:
       - name: Convert DIFF package to Metadata
         run: 'sfdx force:source:convert -r force-app -d convert --loglevel fatal'
 
-      # Store secret for dev hub
+      # Store secret for UAT hub
       - name: 'Populate auth file with UAT_SFDX_URL secret'
         shell: bash
         run: 'echo ${{ secrets.UAT_SFDX_URL}} > ./UAT_SFDX_URL.txt'
 
-      # Authenticate PROD ORG
-      - name: 'Authenticate PRD ORG'
+      # Authenticate UAT ORG
+      - name: 'Authenticate UAT ORG'
         run: 'sfdx auth:sfdxurl:store -f ./UAT_SFDX_URL.txt -a uatorg -d'
 
       # Deploy delta package in checkonly mode
       - name: Deploy DIFF package
-        run: 'sfdx force:mdapi:deploy --deploydir=convert --testlevel=RunLocalTests --checkonly -w60 -u uatorg'
+        run: 'sfdx force:mdapi:deploy --deploydir=convert --testlevel=RunLocalTests -w60 -u uatorg'
